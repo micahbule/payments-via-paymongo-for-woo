@@ -13,6 +13,9 @@
 
 namespace Cynder\PayMongo;
 
+use GuzzleHttp\Exception\ClientException;
+use Paymongo\Phaymongo\PaymongoUtils;
+use Paymongo\Phaymongo\Phaymongo;
 use PostHog\PostHog;
 use WC_Payment_Gateway;
 
@@ -37,6 +40,8 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
      * @var Singleton The reference the *Singleton* instance of this class
      */
     private static $_instance;
+
+    private $client;
 
     public $hasDetailsPayload = false;
 
@@ -100,6 +105,8 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
                 2
             );
         }
+
+        $this->client = new Phaymongo($this->public_key, $this->secret_key);
     }
 
     /**
@@ -115,60 +122,41 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
     public function getPaymentMethodId($orderId) {
         $order = wc_get_order($orderId);
 
-        $attributes = array(
-            'type' => SERVER_PAYMENT_METHOD_TYPES[$this->id],
-            'billing' => $this->generateBillingPayload($order),
+        $cbArgs = array(
+            SERVER_PAYMENT_METHOD_TYPES[$this->id],
         );
 
         if ($this->hasDetailsPayload) {
-            $attributes['details'] = $this->generatePaymentMethodDetailsPayload($order);
+            array_push($cbArgs, $this->generatePaymentMethodDetailsPayload($order));
         }
 
-        $paymentMethodPayload = json_encode(
-            array(
-                'data' => array(
-                    'attributes' => $attributes,
-                ),
-            )
-        );
+        array_push($cbArgs, PaymongoUtils::generateBillingObjectFromWooCommerceOrder($order));
 
-        $paymentMethodArgs = array(
-            'body' => $paymentMethodPayload,
-            'method' => 'POST',
-            'headers' => array(
-                'Authorization' => 'Basic ' . base64_encode($this->secret_key),
-                'accept' => 'application/json',
-                'content-type' => 'application/json'
-            ),
-        );
+        wc_get_logger()->log('info', 'HERE WE GO!');
 
-        $paymentMethodResponse = wp_remote_post(
-            CYNDER_PAYMONGO_BASE_URL . '/payment_methods',
-            $paymentMethodArgs
-        );
+        try {
+            $paymentMethod = call_user_func_array(array($this->client->paymentMethod(), 'create'), $cbArgs);
 
-        if (is_wp_error($paymentMethodResponse)) {
-            wc_get_logger()->log('error', '[Processing Payment] Order ID: ' . $orderId . ' - Response error ' . wc_print_r(json_decode($paymentMethodResponse['body'], true), true));
+            if ($this->debugMode) {
+                wc_get_logger()->log('info', '[process_payment] Payment method response ' . wc_print_r($paymentMethod, true));
+            }
+    
+            if (isset($paymentMethod['errors'])) {
+                for ($i = 0; $i < count($paymentMethod['errors']); $i++) {
+                    wc_add_notice($paymentMethod['errors'][$i]['detail'], 'error');
+                }
+    
+                return;
+            }
+    
+            $paymentMethodId = $paymentMethod['id'];
+    
+            return $paymentMethodId;
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            wc_get_logger()->log('error', '[Processing Payment] Order ID: ' . $orderId . ' - Response error ' . wc_print_r(json_decode($response->getBody()->getContents(), true), true));
             return wc_add_notice('Payment processing error. Please contact side administrator for further details.', 'error');
         }
-
-        $paymentMethodResponsePayload =  json_decode($paymentMethodResponse['body'], true);
-
-        if ($this->debugMode) {
-            wc_get_logger()->log('info', '[process_payment] Payment method response ' . wc_print_r($paymentMethodResponsePayload, true));
-        }
-
-        if (isset($paymentMethodResponsePayload['errors'])) {
-            for ($i = 0; $i < count($paymentMethodResponsePayload['errors']); $i++) {
-                wc_add_notice($paymentMethodResponsePayload['errors'][$i]['detail'], 'error');
-            }
-
-            return;
-        }
-
-        $paymentMethodId = $paymentMethodResponsePayload['data']['id'];
-
-        return $paymentMethodId;
     }
 
     public function generateBillingPayload($order) {
@@ -233,6 +221,10 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
     
         $paymentMethodId = $this->getPaymentMethodId($orderId);
 
+        if ($this->debugMode) {
+            wc_get_logger()->log('info', '[Process Payment] Created payment method ID ' . $paymentMethodId);
+        }
+
         if (!isset($paymentMethodId)) {
             $errorMessage = '[Processing Payment] No payment method ID found.';
             $userMessage = 'Your payment did not proceed due to an error. Rest assured that no payment was made. You may refresh this page and try again.';
@@ -259,49 +251,24 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
             ),
         ));
 
-        $payload = json_encode(
-            array(
-                'data' => array(
-                    'attributes' =>array(
-                        'payment_method' => $paymentMethodId,
-                        'return_url' => get_home_url() . '/?wc-api=cynder_paymongo_catch_redirect&order=' . $orderId . '&intent=' . $paymentIntentId . '&agent=cynder_woocommerce&version=' . CYNDER_PAYMONGO_VERSION
-                    ),
-                ),
-            )
-        );
-        
-        $args = array(
-            'body' => $payload,
-            'method' => "POST",
-            'headers' => array(
-                'Authorization' => 'Basic ' . base64_encode($this->secret_key),
-                'accept' => 'application/json',
-                'content-type' => 'application/json'
-            ),
-            'timeout' => 60,
-        );
+        $returnUrl = get_home_url() . '/?wc-api=cynder_paymongo_catch_redirect&order=' . $orderId . '&intent=' . $paymentIntentId . '&agent=cynder_woocommerce&version=' . CYNDER_PAYMONGO_VERSION;
 
-        $response = wp_remote_post(
-            CYNDER_PAYMONGO_BASE_URL . '/payment_intents/' . $paymentIntentId . '/attach',
-            $args
-        );
+        try {
+            $paymentIntent = $this->client->paymentIntent()->attachPaymentMethod($paymentIntentId, $paymentMethodId, $returnUrl);
 
-        if (!is_wp_error($response)) {
             if ($this->debugMode) {
-                wc_get_logger()->log('info', '[process_payment] Response ' . wc_print_r($response, true));
+                wc_get_logger()->log('info', '[process_payment] Response ' . wc_print_r($paymentIntent, true));
             }
 
-            $body = json_decode($response['body'], true);
-
-            if (isset($body['errors'])) {
-                for ($i = 0; $i < count($body['errors']); $i++) {
-                    wc_add_notice($body['errors'][$i]['detail'], 'error');
+            if (isset($paymentIntent['errors'])) {
+                for ($i = 0; $i < count($paymentIntent['errors']); $i++) {
+                    wc_add_notice($paymentIntent['errors'][$i]['detail'], 'error');
                 }
 
                 return;
             }
 
-            $responseAttr = $body['data']['attributes'];
+            $responseAttr = $paymentIntent['attributes'];
             $status = $responseAttr['status'];
 
             /** For regular payments, process as is */
@@ -345,8 +312,9 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
                     'redirect' => $responseAttr['next_action']['redirect']['url']
                 );
             }
-        } else {
-            wc_get_logger()->log('error', '[Processing Payment] ID: ' . $paymentIntentId . ' - Response error ' . json_encode($response));
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            wc_get_logger()->log('error', '[Processing Payment] Payment Intent ID: ' . $paymentIntentId . ' - Response error ' . wc_print_r(json_decode($response->getBody()->getContents(), true), true));
             return wc_add_notice('Connection error. Check logs.', 'error');
         }
     }
