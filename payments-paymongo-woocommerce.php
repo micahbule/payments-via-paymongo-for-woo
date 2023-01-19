@@ -20,7 +20,6 @@
  */
 
 include_once 'paymongo-constants.php';
-include_once 'classes/address.php';
 require_once plugin_dir_path(__FILE__) . '/vendor/autoload.php';
 
 use PostHog\PostHog;

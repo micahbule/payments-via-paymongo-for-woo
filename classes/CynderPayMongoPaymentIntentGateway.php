@@ -45,6 +45,12 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
 
     public $hasDetailsPayload = false;
 
+    protected $testmode;
+    protected $secret_key;
+    protected $public_key;
+    protected $sendInvoice;
+    protected $debugMode;
+
     /**
      * Returns the *Singleton* instance of this class.
      *
@@ -128,11 +134,11 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
 
         if ($this->hasDetailsPayload) {
             array_push($cbArgs, $this->generatePaymentMethodDetailsPayload($order));
+        } else {
+            array_push($cbArgs, null);
         }
 
-        array_push($cbArgs, PaymongoUtils::generateBillingObjectFromWooCommerceOrder($order));
-
-        wc_get_logger()->log('info', 'HERE WE GO!');
+        array_push($cbArgs, PaymongoUtils::generateBillingObject($order, 'woocommerce'));
 
         try {
             $paymentMethod = call_user_func_array(array($this->client->paymentMethod(), 'create'), $cbArgs);
@@ -159,50 +165,9 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
         }
     }
 
-    public function generateBillingPayload($order) {
-        $billing_first_name = $order->get_billing_first_name();
-        $billing_last_name = $order->get_billing_last_name();
-        $has_billing_first_name = $this->is_billing_value_set($billing_first_name);
-        $has_billing_last_name = $this->is_billing_value_set($billing_last_name);
-
-        if ($has_billing_first_name && $has_billing_last_name) {
-            $billing['name'] = $billing_first_name . ' ' . $billing_last_name;
-        }
-
-        $billing_email = $order->get_billing_email();
-        $has_billing_email = $this->is_billing_value_set($billing_email);
-
-        if ($has_billing_email) {
-            $billing['email'] = $billing_email;
-        }
-
-        $billing_phone = $order->get_billing_phone();
-        $has_billing_phone = $this->is_billing_value_set($billing_phone);
-
-        if ($has_billing_phone) {
-            $billing['phone'] = $billing_phone;
-        }
-
-        $billing_address = generate_billing_address($order);
-
-        if ($this->debugMode) {
-            wc_get_logger()->log('info', 'Billing address ' . wc_print_r($billing_address, true));
-        }
-
-        if (count($billing_address) > 0) {
-            $billing['address'] = $billing_address;
-        }
-
-        return $billing;
-    }
-
     /** Override on certain payment methods */
     public function generatePaymentMethodDetailsPayload($order) {
         return array();
-    }
-
-    public function is_billing_value_set($value) {
-        return isset($value) && $value !== '';
     }
 
     /**

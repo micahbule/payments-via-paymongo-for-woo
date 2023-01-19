@@ -43,6 +43,15 @@ class Cynder_PayMongo_Ewallet_Gateway extends WC_Payment_Gateway
 
     private $client;
 
+    protected $testmode;
+    protected $secret_key;
+    protected $public_key;
+    protected $debugMode;
+
+    private $ewallet_type;
+
+    protected $icon_name;
+
     /**
      * Returns the *Singleton* instance of this class.
      *
@@ -124,7 +133,7 @@ class Cynder_PayMongo_Ewallet_Gateway extends WC_Payment_Gateway
             ),
         ));
 
-        $billing = PaymongoUtils::generateBillingObjectFromWooCommerceOrder($order);
+        $billing = PaymongoUtils::generateBillingObject($order, 'woocommerce');
         $successUrl = get_home_url() . '/?wc-api=cynder_paymongo_catch_source_redirect&order=' . $orderId . '&status=success&agent=cynder_woocommerce&version=' . CYNDER_PAYMONGO_VERSION;
         $failedUrl = get_home_url() . '/?wc-api=cynder_paymongo_catch_source_redirect&order=' . $orderId . '&status=failed&agent=cynder_woocommerce&version=' . CYNDER_PAYMONGO_VERSION;
         
