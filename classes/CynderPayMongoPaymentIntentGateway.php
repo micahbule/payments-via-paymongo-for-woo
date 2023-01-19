@@ -160,7 +160,7 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
             return $paymentMethodId;
         } catch (ClientException $e) {
             $response = $e->getResponse();
-            wc_get_logger()->log('error', '[Processing Payment] Order ID: ' . $orderId . ' - Response error ' . wc_print_r(json_decode($response->getBody()->getContents(), true), true));
+            wc_get_logger()->log('error', '[Processing Payment] Order ID: ' . $orderId . ' - Response error ' . wc_print_r(json_decode($response->getBody()->__toString(), true), true));
             return wc_add_notice('Payment processing error. Please contact side administrator for further details.', 'error');
         }
     }
@@ -279,7 +279,7 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
             }
         } catch (ClientException $e) {
             $response = $e->getResponse();
-            wc_get_logger()->log('error', '[Processing Payment] Payment Intent ID: ' . $paymentIntentId . ' - Response error ' . wc_print_r(json_decode($response->getBody()->getContents(), true), true));
+            wc_get_logger()->log('error', '[Processing Payment] Payment Intent ID: ' . $paymentIntentId . ' - Response error ' . wc_print_r(json_decode($response->getBody()->__toString(), true), true));
             return wc_add_notice('Connection error. Check logs.', 'error');
         }
     }

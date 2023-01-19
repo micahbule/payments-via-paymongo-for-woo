@@ -42,6 +42,13 @@ class Cynder_PayMongo_Webhook_Handler extends WC_Payment_Gateway
 
     private $client;
 
+    protected $testmode;
+    protected $public_key;
+    protected $secret_key;
+    protected $webhook_secret;
+    protected $sendInvoice;
+    protected $debugMode;
+
     /**
      * Returns the *Singleton* instance of this class.
      *
@@ -340,7 +347,7 @@ class Cynder_PayMongo_Webhook_Handler extends WC_Payment_Gateway
             $order->update_status('failed', 'PayMongo payment creation failed. See logs for details.', true);
             $sourceId = $source['id'];
 
-            wc_get_logger()->log('error', "Payment creation failed for: ${sourceId} " . wc_print_r(json_decode($response->getBody()->getContents(), true), true));
+            wc_get_logger()->log('error', "Payment creation failed for: ${sourceId} " . wc_print_r(json_decode($response->getBody()->__toString(), true), true));
             status_header(422);
             die();
         }
