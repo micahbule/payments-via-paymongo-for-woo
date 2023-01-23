@@ -14,4 +14,9 @@
             <directory suffix=".php">./classes</directory>
         </include>
     </coverage>
+    <filter>
+        <whitelist>
+            <directory>./classes</directory>
+        </whitelist>
+    </filter>
 </phpunit>

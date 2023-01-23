@@ -45,7 +45,7 @@ it('should get payment method', function () {
         ->shouldReceive('paymentMethod')
         ->andReturn($mockPaymentMethod);
 
-    $paymentIntent = new PaymentIntent('paymongo_atome', $mockUtils, false, $mockClient);
+    $paymentIntent = new PaymentIntent('paymongo_atome', $mockUtils, false, false, $mockClient);
     $paymentMethod = $paymentIntent->getPaymentMethod($mockOrder);
 
     expect($paymentMethod)->toBe('success');
@@ -93,7 +93,7 @@ it('should get payment method with details', function () {
         ->shouldReceive('paymentMethod')
         ->andReturn($mockPaymentMethod);
 
-    $paymentIntent = new PaymentIntent('paymongo_atome', $mockUtils, false, $mockClient);
+    $paymentIntent = new PaymentIntent('paymongo_atome', $mockUtils, false, false, $mockClient);
     $paymentMethod = $paymentIntent->getPaymentMethod($mockOrder, function ($order) {
         return [
             'foo' => $order->get_id(),
@@ -156,7 +156,7 @@ it('should throw errors', function () {
         ->shouldReceive('paymentMethod')
         ->andReturn($mockPaymentMethod);
 
-    $paymentIntent = new PaymentIntent('paymongo_atome', $mockUtils, false, $mockClient);
+    $paymentIntent = new PaymentIntent('paymongo_atome', $mockUtils, false, false, $mockClient);
     $paymentMethod = $paymentIntent->getPaymentMethod($mockOrder);
 
     expect($paymentMethod)->toBeNull();

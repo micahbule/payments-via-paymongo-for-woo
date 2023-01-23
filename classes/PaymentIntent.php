@@ -21,7 +21,7 @@ class PaymentIntent {
         'paymongo_billease' => 'billease',
     ];
 
-    public function __construct($type, Utils $utils, $debug_mode, $test_mode, Phaymongo $client)
+    public function __construct($type, $utils, $debug_mode, $test_mode, $client)
     {
         $this->type = $type;
         $this->utils = $utils;
