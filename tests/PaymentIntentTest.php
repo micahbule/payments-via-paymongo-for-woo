@@ -161,3 +161,120 @@ it('should throw errors', function () {
 
     expect($paymentMethod)->toBeNull();
 });
+
+it('should process payment successfully with immediate successful payment settlement', function () {
+    $mockOrder = \Mockery::mock();
+    $mockOrder->shouldReceive([
+        'get_total' => '100',
+        'get_payment_method' => 'paymongo_atome',
+    ]);
+
+    $mockOrder
+        ->shouldReceive('get_meta')
+        ->withArgs(['paymongo_payment_intent_id'])
+        ->andReturn('1');
+
+    $mockUtils = \Mockery::mock();
+    $mockUtils->shouldReceive('log');
+    $mockUtils->shouldReceive('addNotice');
+    $mockUtils->shouldReceive('emptyCart');
+    $mockUtils
+        ->shouldReceive('trackProcessPayment')
+        ->withArgs([100, 'paymongo_atome', false]);
+
+    $mockUtils
+        ->shouldReceive('completeOrder')
+        ->withArgs([$mockOrder, '4', false]);
+
+    $mockUtils
+        ->shouldReceive('trackSuccessfulPayment')
+        ->withArgs(['4', 100, 'paymongo_atome', false]);
+
+    $mockUtils
+        ->shouldReceive('callAction')
+        ->withArgs(['cynder_paymongo_successful_payment', ['id' => '4']]);
+
+    $mockPaymentIntent = \Mockery::mock();
+    $mockPaymentIntent
+        ->shouldReceive('attachPaymentMethod')
+        ->withArgs(['1', '2', 'https://some-domain.com/return-url-for-gateway'])
+        ->andReturn([
+            'id' => '3',
+            'attributes' => [
+                'status' => 'succeeded',
+                'payments' => [
+                    ['id' => '4'],
+                ],
+                'amount' => '10000'
+            ],
+        ]);
+
+    $mockClient = \Mockery::mock();
+    $mockClient
+        ->shouldReceive('paymentIntent')
+        ->andReturn($mockPaymentIntent);
+
+    $paymentIntent = new PaymentIntent('paymongo_atome', $mockUtils, false, false, $mockClient);
+    $returnObj = $paymentIntent->processPayment($mockOrder, '2', 'https://some-domain.com/return-url-for-gateway', 'https://some-domain.com/thank-you', false);
+
+    expect($returnObj)->toBe(['result' => 'success', 'redirect' => 'https://some-domain.com/thank-you']);
+});
+
+it('should process payment successfully with checkout url', function () {
+    $mockOrder = \Mockery::mock();
+    $mockOrder->shouldReceive([
+        'get_total' => '100',
+        'get_payment_method' => 'paymongo_atome',
+    ]);
+
+    $mockOrder
+        ->shouldReceive('get_meta')
+        ->withArgs(['paymongo_payment_intent_id'])
+        ->andReturn('1');
+
+    $mockUtils = \Mockery::mock();
+    $mockUtils->shouldReceive('log');
+    $mockUtils->shouldReceive('addNotice');
+    $mockUtils->shouldReceive('emptyCart');
+    $mockUtils
+        ->shouldReceive('trackProcessPayment')
+        ->withArgs([100, 'paymongo_atome', false]);
+
+    $mockUtils
+        ->shouldReceive('completeOrder')
+        ->withArgs([$mockOrder, '4', false]);
+
+    $mockUtils
+        ->shouldReceive('trackSuccessfulPayment')
+        ->withArgs(['4', 100, 'paymongo_atome', false]);
+
+    $mockUtils
+        ->shouldReceive('callAction')
+        ->withArgs(['cynder_paymongo_successful_payment', ['id' => '4']]);
+
+    $mockPaymentIntent = \Mockery::mock();
+    $mockPaymentIntent
+        ->shouldReceive('attachPaymentMethod')
+        ->withArgs(['1', '2', 'https://some-domain.com/return-url-for-gateway'])
+        ->andReturn([
+            'id' => '3',
+            'attributes' => [
+                'status' => 'awaiting_next_action',
+                'next_action' => [
+                    'redirect' => [
+                        'url' => 'https://some-third-party-gateway.com/1'
+                    ],
+                ],
+            ],
+        ]);
+
+    $mockClient = \Mockery::mock();
+    $mockClient
+        ->shouldReceive('paymentIntent')
+        ->andReturn($mockPaymentIntent);
+
+    $paymentIntent = new PaymentIntent('paymongo_atome', $mockUtils, false, false, $mockClient);
+    $returnObj = $paymentIntent->processPayment($mockOrder, '2', 'https://some-domain.com/return-url-for-gateway', 'https://some-domain.com/thank-you', false);
+
+    expect($returnObj)->toBe(['result' => 'success', 'redirect' => 'https://some-third-party-gateway.com/1']);
+});

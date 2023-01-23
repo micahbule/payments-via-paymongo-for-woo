@@ -17,6 +17,10 @@ class Utils {
         return wc_print_r($message, true);
     }
 
+    public function callAction($action, ...$args) {
+        call_user_func('do_action', array_merge([$action], $args));
+    }
+
     public function sendInvoice($order_id) {
         global $woocommerce;
         $woocommerce->mailer()->emails['WC_Email_Customer_Invoice']->trigger($order_id);

@@ -4,7 +4,6 @@ namespace Cynder\PayMongo;
 
 use Paymongo\Phaymongo\PaymongoException;
 use Paymongo\Phaymongo\PaymongoUtils;
-use Paymongo\Phaymongo\Phaymongo;
 
 class PaymentIntent {
     protected $type;
@@ -108,7 +107,7 @@ class PaymentIntent {
                 $this->utils->emptyCart();
                 $this->utils->trackSuccessfulPayment($payment_id, $payment_intent_amount, $payment_method, $this->test_mode);
 
-                do_action('cynder_paymongo_successful_payment', $payment);
+                $this->utils->callAction('cynder_paymongo_successful_payment', $payment);
 
                 $return_obj['redirect'] = $original_return_url;
             } else if ($payment_intent_status == 'awaiting_next_action') {
