@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0c91ae764dd2413f2c4184aa52c9a1eb",
+    "content-hash": "2f419aad68503a5988ad912be39e6b07",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -339,24 +339,24 @@
         },
         {
             "name": "micahbule/phaymongo",
-            "version": "1.4.2",
+            "version": "1.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/micahbule/phaymongo.git",
-                "reference": "a16448a6480500b55748fe3c9f85c10e372a1baf"
+                "reference": "c8927a00b992e048ca145bc9da1e17b86df25aa7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/micahbule/phaymongo/zipball/a16448a6480500b55748fe3c9f85c10e372a1baf",
-                "reference": "a16448a6480500b55748fe3c9f85c10e372a1baf",
+                "url": "https://api.github.com/repos/micahbule/phaymongo/zipball/c8927a00b992e048ca145bc9da1e17b86df25aa7",
+                "reference": "c8927a00b992e048ca145bc9da1e17b86df25aa7",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.0"
             },
             "require-dev": {
+                "mockery/mockery": "dev-master",
                 "pestphp/pest": "^1.22",
-                "pestphp/pest-plugin-mock": "^1.0",
                 "pestphp/pest-plugin-parallel": "^1.2"
             },
             "type": "library",
@@ -377,9 +377,9 @@
             "description": "A Paymongo client written in PHP",
             "support": {
                 "issues": "https://github.com/micahbule/phaymongo/issues",
-                "source": "https://github.com/micahbule/phaymongo/tree/1.4.2"
+                "source": "https://github.com/micahbule/phaymongo/tree/1.4.3"
             },
-            "time": "2023-01-21T06:17:34+00:00"
+            "time": "2023-01-25T06:23:55+00:00"
         },
         {
             "name": "posthog/posthog-php",
@@ -1566,79 +1566,6 @@
                 }
             ],
             "time": "2022-09-18T13:18:17+00:00"
-        },
-        {
-            "name": "pestphp/pest-plugin-mock",
-            "version": "v1.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pestphp/pest-plugin-mock.git",
-                "reference": "c2dbca6cb85a870f2e666d01aca0a3fdca7d063c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pestphp/pest-plugin-mock/zipball/c2dbca6cb85a870f2e666d01aca0a3fdca7d063c",
-                "reference": "c2dbca6cb85a870f2e666d01aca0a3fdca7d063c",
-                "shasum": ""
-            },
-            "require": {
-                "mockery/mockery": "^1.4",
-                "pestphp/pest": "^1.0",
-                "pestphp/pest-plugin": "^1.0",
-                "php": "^8.0"
-            },
-            "require-dev": {
-                "pestphp/pest-dev-tools": "dev-master"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.x-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/Autoload.php"
-                ],
-                "psr-4": {
-                    "Pest\\Mock\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Adds mocking capabilities to Pest or PHPUnit",
-            "keywords": [
-                "framework",
-                "mock",
-                "mocking",
-                "pest",
-                "php",
-                "plugin",
-                "test",
-                "testing",
-                "unit"
-            ],
-            "support": {
-                "issues": "https://github.com/pestphp/pest-plugin-mock/issues",
-                "source": "https://github.com/pestphp/pest-plugin-mock/tree/v1.0.3"
-            },
-            "funding": [
-                {
-                    "url": "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=66BYDWAT92N6L",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/nunomaduro",
-                    "type": "github"
-                },
-                {
-                    "url": "https://www.patreon.com/nunomaduro",
-                    "type": "patreon"
-                }
-            ],
-            "time": "2021-06-10T18:04:11+00:00"
         },
         {
             "name": "pestphp/pest-plugin-parallel",
@@ -3347,16 +3274,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v6.2.3",
+            "version": "v6.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "0f579613e771dba2dbb8211c382342a641f5da06"
+                "reference": "3e294254f2191762c1d137aed4b94e966965e985"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/0f579613e771dba2dbb8211c382342a641f5da06",
-                "reference": "0f579613e771dba2dbb8211c382342a641f5da06",
+                "url": "https://api.github.com/repos/symfony/console/zipball/3e294254f2191762c1d137aed4b94e966965e985",
+                "reference": "3e294254f2191762c1d137aed4b94e966965e985",
                 "shasum": ""
             },
             "require": {
@@ -3423,7 +3350,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v6.2.3"
+                "source": "https://github.com/symfony/console/tree/v6.2.5"
             },
             "funding": [
                 {
@@ -3439,7 +3366,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-12-28T14:26:22+00:00"
+            "time": "2023-01-01T08:38:09+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -3773,16 +3700,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v6.2.0",
+            "version": "v6.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "ba6e55359f8f755fe996c58a81e00eaa67a35877"
+                "reference": "9ead139f63dfa38c4e4a9049cc64a8b2748c83b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/ba6e55359f8f755fe996c58a81e00eaa67a35877",
-                "reference": "ba6e55359f8f755fe996c58a81e00eaa67a35877",
+                "url": "https://api.github.com/repos/symfony/process/zipball/9ead139f63dfa38c4e4a9049cc64a8b2748c83b7",
+                "reference": "9ead139f63dfa38c4e4a9049cc64a8b2748c83b7",
                 "shasum": ""
             },
             "require": {
@@ -3814,7 +3741,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v6.2.0"
+                "source": "https://github.com/symfony/process/tree/v6.2.5"
             },
             "funding": [
                 {
@@ -3830,7 +3757,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-11-02T09:08:04+00:00"
+            "time": "2023-01-01T08:38:09+00:00"
         },
         {
             "name": "symfony/service-contracts",
@@ -3919,16 +3846,16 @@
         },
         {
             "name": "symfony/string",
-            "version": "v6.2.2",
+            "version": "v6.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "863219fd713fa41cbcd285a79723f94672faff4d"
+                "reference": "b2dac0fa27b1ac0f9c0c0b23b43977f12308d0b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/863219fd713fa41cbcd285a79723f94672faff4d",
-                "reference": "863219fd713fa41cbcd285a79723f94672faff4d",
+                "url": "https://api.github.com/repos/symfony/string/zipball/b2dac0fa27b1ac0f9c0c0b23b43977f12308d0b0",
+                "reference": "b2dac0fa27b1ac0f9c0c0b23b43977f12308d0b0",
                 "shasum": ""
             },
             "require": {
@@ -3985,7 +3912,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v6.2.2"
+                "source": "https://github.com/symfony/string/tree/v6.2.5"
             },
             "funding": [
                 {
@@ -4001,7 +3928,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-12-14T16:11:27+00:00"
+            "time": "2023-01-01T08:38:09+00:00"
         },
         {
             "name": "theseer/tokenizer",

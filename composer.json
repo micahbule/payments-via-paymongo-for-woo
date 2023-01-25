@@ -15,16 +15,19 @@
     ],
     "require": {
         "posthog/posthog-php": "2.1.*",
-        "micahbule/phaymongo": "1.4.2"
+        "micahbule/phaymongo": "1.4.3"
     },
     "require-dev": {
         "pestphp/pest": "^1.22",
-        "pestphp/pest-plugin-mock": "^1.0",
-        "pestphp/pest-plugin-parallel": "^1.2"
+        "pestphp/pest-plugin-parallel": "^1.2",
+        "mockery/mockery": "^1.5"
     },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
+    },
+    "scripts": {
+        "test": "./vendor/bin/pest --parallel"
     }
 }
