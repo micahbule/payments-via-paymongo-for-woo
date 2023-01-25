@@ -51,6 +51,7 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
     protected $sendInvoice;
     protected $debugMode;
     protected $paymentIntent;
+    protected $utils;
 
     /**
      * Returns the *Singleton* instance of this class.
@@ -115,7 +116,7 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
 
         $this->utils = new Utils();
         $this->client = new Phaymongo($this->public_key, $this->secret_key);
-        $this->paymentIntent = new PaymentIntent($this->id, $this->utils, $debugMode, $this->client);
+        $this->paymentIntent = new PaymentIntent($this->id, $this->utils, $debugMode, $testMode, $this->client);
     }
 
     /**
@@ -160,6 +161,7 @@ class CynderPayMongoPaymentIntentGateway extends WC_Payment_Gateway
     {
         $paymentMethodId = $this->getPaymentMethodId($orderId);
         $order = wc_get_order($orderId);
+        $paymentIntentId = $order->get_meta('paymongo_payment_intent_id');
         $returnUrl = get_home_url() . '/?wc-api=cynder_paymongo_catch_redirect&order=' . $orderId . '&intent=' . $paymentIntentId . '&agent=cynder_woocommerce&version=' . CYNDER_PAYMONGO_VERSION;
 
         $returnObj = $this->paymentIntent->processPayment($order, $paymentMethodId, $returnUrl, $this->get_return_url($order), $this->sendInvoice);
