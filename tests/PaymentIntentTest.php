@@ -167,6 +167,7 @@ it('should process payment successfully with immediate successful payment settle
     $mockOrder->shouldReceive([
         'get_total' => '100',
         'get_payment_method' => 'paymongo_atome',
+        'get_id' => '1',
     ]);
 
     $mockOrder
@@ -225,6 +226,7 @@ it('should process payment successfully with checkout url', function () {
     $mockOrder->shouldReceive([
         'get_total' => '100',
         'get_payment_method' => 'paymongo_atome',
+        'get_id' => '1',
     ]);
 
     $mockOrder
@@ -277,4 +279,88 @@ it('should process payment successfully with checkout url', function () {
     $returnObj = $paymentIntent->processPayment($mockOrder, '2', 'https://some-domain.com/return-url-for-gateway', 'https://some-domain.com/thank-you', false);
 
     expect($returnObj)->toBe(['result' => 'success', 'redirect' => 'https://some-third-party-gateway.com/1']);
+});
+
+it('should show and log errors if no payment method ID', function () {
+    $mockClient = \Mockery::mock();
+
+    $mockOrder = \Mockery::mock();
+    $mockOrder
+        ->shouldReceive([
+            'get_id' => '1',
+        ]);
+
+    $mockUtils = \Mockery::mock();
+    $mockUtils
+        ->shouldReceive('log')
+        ->withArgs(['error', 'No payment method ID found while processing payment for order ID 1.']);
+    $mockUtils
+        ->shouldReceive('addNotice')
+        ->withArgs(['error', 'Your payment did not proceed due to an error. Please try again or contact the merchant and/or site administrator. (Error Code: PI001)']);
+
+
+    $paymentIntent = new PaymentIntent('paymongo_atome', $mockUtils, false, false, $mockClient);
+    $returnObj = $paymentIntent->processPayment($mockOrder, null, null, null, false);
+
+    expect($returnObj)->toBeNull();
+});
+
+it('should show and log errors if no payment intent ID', function () {
+    $mockClient = \Mockery::mock();
+
+    $mockOrder = \Mockery::mock();
+    $mockOrder
+        ->shouldReceive([
+            'get_id' => '1',
+            'get_meta' => null
+        ]);
+
+    $mockUtils = \Mockery::mock();
+    $mockUtils
+        ->shouldReceive('log')
+        ->withArgs(['error', 'No payment intent ID found while processing payment for order ID 1.']);
+    $mockUtils
+        ->shouldReceive('addNotice')
+        ->withArgs(['error', 'Your payment did not proceed due to an error. Please try again or contact the merchant and/or site administrator. (Error Code: PI002)']);
+
+    $paymentIntent = new PaymentIntent('paymongo_atome', $mockUtils, false, false, $mockClient);
+    $returnObj = $paymentIntent->processPayment($mockOrder, '2', null, null, false);
+
+    expect($returnObj)->toBeNull();
+});
+
+it('should show and leg errors after attaching payment method to payment intent', function () {
+    $mockOrder = \Mockery::mock();
+    $mockOrder
+        ->shouldReceive([
+            'get_id' => '1',
+            'get_meta' => '2',
+            'get_total' => '100',
+            'get_payment_method' => 'paymongo_atome',
+        ]);
+
+    $mockPaymentIntent = \Mockery::mock();
+    $mockPaymentIntent
+        ->shouldReceive('attachPaymentMethod')
+        ->andThrow(new PaymongoException([['detail' => 'some error']]));
+    
+    $mockClient = \Mockery::mock();
+    $mockClient
+        ->shouldReceive('paymentIntent')
+        ->andReturn($mockPaymentIntent);
+
+    $mockUtils = \Mockery::mock();
+    $mockUtils->shouldReceive('trackProcessPayment');
+    $mockUtils
+        ->shouldReceive('log')
+        ->withArgs(['error', 'Response payload from Paymongo API for endpoint POST /payment_intent/{id}/attach: some error']);
+    
+    $mockUtils
+        ->shouldReceive('addNotice')
+        ->withArgs(['error', 'some error']);
+    
+    $paymentIntent = new PaymentIntent('paymongo_atome', $mockUtils, false, false, $mockClient);
+    $returnObj = $paymentIntent->processPayment($mockOrder, '1', 'https://some-domain.com/return-url-for-gateway', 'https://some-domain.com/thank-you', false);
+
+    expect($returnObj)->toBeNull();
 });

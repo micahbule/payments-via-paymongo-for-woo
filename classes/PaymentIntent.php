@@ -6,6 +6,8 @@ use Paymongo\Phaymongo\PaymongoException;
 use Paymongo\Phaymongo\PaymongoUtils;
 
 class PaymentIntent {
+    use ErrorsTrait;
+
     protected $type;
     protected $order;
     protected $utils;
@@ -62,21 +64,21 @@ class PaymentIntent {
     }
 
     public function processPayment($order, $payment_method_id, $return_url_for_gateway, $original_return_url, $send_invoice) {
-        $generic_user_message = 'Your payment did not proceed due to an error. Rest assured that no payment was made. You may refresh this page and try again.';
+        $order_id = $order->get_id();
 
         if (!isset($payment_method_id)) {
-            $error_message = '[Processing Payment] No payment method ID found.';
-            $this->utils->log('error', $error_message);
-            $this->utils->addNotice('error', $generic_user_message);
+            $error_code = 'PI001';
+            $this->utils->log('error', $this->getLogError($error_code, [$order_id]));
+            $this->utils->addNotice('error', $this->getUserError($error_code));
             return null;
         }
 
         $payment_intent_id = $order->get_meta('paymongo_payment_intent_id');
 
         if (!isset($payment_intent_id)) {
-            $error_message = '[Processing Payment] No payment intent ID found.';
-            $this->utils->log('error', $error_message);
-            $this->utils->addNotice('error', $generic_user_message);
+            $error_code = 'PI002';
+            $this->utils->log('error', $this->getLogError($error_code, [$order_id]));
+            $this->utils->addNotice('error', $this->getUserError($error_code));
             return null;
         }
 
@@ -118,9 +120,8 @@ class PaymentIntent {
         } catch (PaymongoException $e) {
             $formatted_messages = $e->format_errors();
 
-            $this->utils->log('error', '[Processing Payment] Order ID: ' . $order->get_id() . ' - Response: ' . join(',', $formatted_messages));
-
             foreach ($formatted_messages as $message) {
+                $this->utils->log('error', $this->getLogError('PI003', ['POST /payment_intent/{id}/attach', $message]));
                 $this->utils->addNotice('error', $message);
             }
 
