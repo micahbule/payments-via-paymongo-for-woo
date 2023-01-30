@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2f419aad68503a5988ad912be39e6b07",
+    "content-hash": "b003a3cdab5109aa30167e109dc4a841",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -327,16 +327,16 @@
         },
         {
             "name": "micahbule/phaymongo",
-            "version": "1.4.3",
+            "version": "1.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/micahbule/phaymongo.git",
-                "reference": "c8927a00b992e048ca145bc9da1e17b86df25aa7"
+                "reference": "ec7bce41307db37b87d7ac0a6f0aaef936155f15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/micahbule/phaymongo/zipball/c8927a00b992e048ca145bc9da1e17b86df25aa7",
-                "reference": "c8927a00b992e048ca145bc9da1e17b86df25aa7",
+                "url": "https://api.github.com/repos/micahbule/phaymongo/zipball/ec7bce41307db37b87d7ac0a6f0aaef936155f15",
+                "reference": "ec7bce41307db37b87d7ac0a6f0aaef936155f15",
                 "shasum": ""
             },
             "require": {
@@ -363,7 +363,7 @@
                 }
             ],
             "description": "A Paymongo client written in PHP",
-            "time": "2023-01-25T06:23:55+00:00"
+            "time": "2023-01-30T14:03:48+00:00"
         },
         {
             "name": "posthog/posthog-php",
@@ -1625,16 +1625,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.23",
+            "version": "9.2.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "9f1f0f9a2fbb680b26d1cf9b61b6eac43a6e4e9c"
+                "reference": "2cf940ebc6355a9d430462811b5aaa308b174bed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/9f1f0f9a2fbb680b26d1cf9b61b6eac43a6e4e9c",
-                "reference": "9f1f0f9a2fbb680b26d1cf9b61b6eac43a6e4e9c",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2cf940ebc6355a9d430462811b5aaa308b174bed",
+                "reference": "2cf940ebc6355a9d430462811b5aaa308b174bed",
                 "shasum": ""
             },
             "require": {
@@ -1694,7 +1694,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-12-28T12:41:10+00:00"
+            "time": "2023-01-26T08:26:55+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",

@@ -53,7 +53,7 @@ class Utils {
             'event' => 'process payment',
             'properties' => array(
                 'amount' => $amount,
-                'payment_method' => $payment_method(),
+                'payment_method' => $payment_method,
                 'sandbox' => $test_mode ? 'true' : 'false',
             ),
         ));
