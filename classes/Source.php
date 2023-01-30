@@ -34,8 +34,8 @@ class Source {
 
         $billing = PaymongoUtils::generateBillingObject($order, 'woocommerce');
 
-        $success_url = get_home_url() . '/?wc-api=cynder_paymongo_catch_source_redirect&order=' . $order_id . '&status=success&agent=cynder_woocommerce&version=' . $this->plugin_version;
-        $failed_url = get_home_url() . '/?wc-api=cynder_paymongo_catch_source_redirect&order=' . $order_id . '&status=failed&agent=cynder_woocommerce&version=' . $this->plugin_version;
+        $success_url = $this->utils->getSourceReturnUrl('success', $order_id, $this->plugin_version);
+        $failed_url = $this->utils->getSourceReturnUrl('failed', $order_id, $this->plugin_version);
 
         try {
             $source = $this->client->source()->create($amount, $this->type, $success_url, $failed_url, $billing, array('agent' => 'cynder_woocommerce', 'version' => $this->plugin_version));

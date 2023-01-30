@@ -71,4 +71,8 @@ class Utils {
             ),
         ));
     }
+
+    public function getSourceReturnUrl($status, $order_id, $plugin_version) {
+        return get_home_url() . '/?wc-api=cynder_paymongo_catch_source_redirect&order=' . $order_id . '&status=' . $status . '&agent=cynder_woocommerce&version=' . $plugin_version;
+    }
 }
