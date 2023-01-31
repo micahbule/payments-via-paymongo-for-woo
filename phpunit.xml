@@ -17,6 +17,12 @@
     <filter>
         <whitelist>
             <directory>./classes</directory>
+            <exclude>
+                <directory prefix="Cynder_PayMongo">./classes</directory>
+                <directory prefix="CynderPayMongo">./classes</directory>
+                <file>./classes/cc-fields.php</file>
+                <file>./classes/Utils.php</file>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>
