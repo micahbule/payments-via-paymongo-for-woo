@@ -28,6 +28,7 @@
         }
     },
     "scripts": {
-        "test": "./vendor/bin/pest --parallel"
+        "test": "./vendor/bin/pest --parallel",
+        "test:coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --parallel --coverage"
     }
 }
