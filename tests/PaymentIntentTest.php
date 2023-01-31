@@ -188,8 +188,8 @@ it('should process payment successfully with immediate successful payment settle
         ->withArgs([$mockOrder, '4', false]);
 
     $mockUtils
-        ->shouldReceive('trackSuccessfulPayment')
-        ->withArgs(['4', 100, 'paymongo_atome', false]);
+        ->shouldReceive('trackPaymentResolution')
+        ->withArgs(['successful', '4', 100, 'paymongo_atome', false]);
 
     $mockUtils
         ->shouldReceive('callAction')
@@ -247,8 +247,8 @@ it('should process payment successfully with checkout url', function () {
         ->withArgs([$mockOrder, '4', false]);
 
     $mockUtils
-        ->shouldReceive('trackSuccessfulPayment')
-        ->withArgs(['4', 100, 'paymongo_atome', false]);
+        ->shouldReceive('trackPaymentResolution')
+        ->withArgs(['successful', '4', 100, 'paymongo_atome', false]);
 
     $mockUtils
         ->shouldReceive('callAction')

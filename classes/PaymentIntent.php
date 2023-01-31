@@ -107,7 +107,7 @@ class PaymentIntent {
 
                 $this->utils->completeOrder($order, $payment_id, $send_invoice);
                 $this->utils->emptyCart();
-                $this->utils->trackSuccessfulPayment($payment_id, $payment_intent_amount, $payment_method, $this->test_mode);
+                $this->utils->trackPaymentResolution('successful', $payment_id, $payment_intent_amount, $payment_method, $this->test_mode);
 
                 $this->utils->callAction('cynder_paymongo_successful_payment', $payment);
 
