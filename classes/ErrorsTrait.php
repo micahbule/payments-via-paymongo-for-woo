@@ -24,7 +24,10 @@ trait ErrorsTrait {
 
     public function getUserError($code, $data = []) {
         try {
-            $user_error_key = $this->error_hashmap[$code];
+            $user_error_key = $this->error_hashmap[$code] ?? null;
+
+            if (!isset($user_error_key)) throw new Exception('Undefined user code');
+
             $string_data = array_merge($data, ['Error Code: ' . $code]);
             $final_error = sprintf($this->user_errors[$user_error_key] . ' (%s)', ...$string_data);
         } catch (Exception $e) {
@@ -36,7 +39,11 @@ trait ErrorsTrait {
 
     public function getLogError($code, $data = []) {
         try {
-            $final_error = sprintf($this->log_errors[$code], ...$data);
+            $log_error_key = $this->log_errors[$code] ?? null;
+
+            if (!isset($log_error_key)) throw new Exception('Undefined log code');
+
+            $final_error = sprintf($log_error_key, ...$data);
         } catch (Exception $e) {
             $final_error = sprintf($this->user_errors['generic_log_error'], $code);
         } finally {
