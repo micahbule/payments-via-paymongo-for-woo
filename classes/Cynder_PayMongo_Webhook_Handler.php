@@ -188,7 +188,7 @@ class Cynder_PayMongo_Webhook_Handler extends WC_Payment_Gateway
             $sourceType = $resourceData['attributes']['source']['type'];
             $amount = $resourceData['attributes']['amount'];
 
-            if ($eventData['type'] === 'payment.paid' && $sourceType !== 'gcash' && $sourceType !== 'grab_pay') {
+            if ($eventData['type'] === 'payment.paid') {
                 $paymentIntentId = $resourceData['attributes']['payment_intent_id'];
                 $order = $this->getOrderByMeta('paymongo_payment_intent_id', $paymentIntentId);
 
@@ -215,7 +215,7 @@ class Cynder_PayMongo_Webhook_Handler extends WC_Payment_Gateway
                 return;
             }
 
-            if ($eventData['type'] === 'payment.failed' && $sourceType !== 'gcash' && $sourceType !== 'grab_pay') {
+            if ($eventData['type'] === 'payment.failed') {
                 $paymentIntentId = $resourceData['attributes']['payment_intent_id'];
                 $order = $this->getOrderByMeta('paymongo_payment_intent_id', $paymentIntentId);
 

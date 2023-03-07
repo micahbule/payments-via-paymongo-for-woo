@@ -32,7 +32,7 @@ class Utils {
 
     public function emptyCart() {
         global $woocommerce;
-        $woocommerce->cart->empty_carty();
+        $woocommerce->cart->empty_cart();
     }
 
     public function completeOrder($order, $payment_id, $send_invoice) {
