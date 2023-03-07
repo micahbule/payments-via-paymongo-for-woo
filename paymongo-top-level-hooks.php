@@ -44,7 +44,7 @@ function cynder_paymongo_create_intent($orderId) {
     if (
         $paymentMethodSettings['enabled'] !== 'yes' ||
         !$hasPaymentMethod ||
-        (!in_array($paymentMethod, PAYMENT_METHODS_WITH_INTENT))
+        (!in_array($paymentMethod, PAYMONGO_PAYMENT_METHODS))
     ) return;
 
     $amount = floatval($order->get_total());
