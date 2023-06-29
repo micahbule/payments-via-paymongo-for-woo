@@ -21,6 +21,8 @@ if (!defined('ABSPATH')) {
 }
 
 function cynder_paymongo_create_intent($orderId) {
+    $utils = new Utils();
+
     $testMode = get_option('woocommerce_cynder_paymongo_test_mode');
     $testMode = (!empty($testMode) && $testMode === 'yes') ? true : false;
     
@@ -73,8 +75,8 @@ function cynder_paymongo_create_intent($orderId) {
                 'agent' => 'cynder_woocommerce',
                 'version' => CYNDER_PAYMONGO_VERSION,
                 'store_name' => $shopName,
-                'order_id' => $orderId,
-                'customer_id' => $order->get_customer_id(),
+                'order_id' => strval($orderId),
+                'customer_id' => strval($order->get_customer_id()),
             )
         );
 
@@ -107,9 +109,9 @@ function cynder_paymongo_create_intent($orderId) {
             wc_get_logger()->log('error', '[Create Payment Intent] ' . json_encode($paymentIntent['errors']));
             throw new Exception(__($genericErrorMessage, 'woocommerce'));
         }
-    } catch (ClientException $e) {
-        $response = $e->getResponse();
-        wc_get_logger()->log('error', '[Create Payment Intent] ' . wc_print_r(json_decode($response->getBody()->__toString(), true), true));
+    } catch (PaymongoException $e) {
+        $formatted_messages = $e->format_errors();
+        $utils->log('error', '[Create Payment Intent] Response - ' . join(',', $formatted_messages));
         throw new Exception(__($genericErrorMessage, 'woocommerce'));
     }
 }

@@ -165,7 +165,15 @@ class Cynder_PayMongo_Webhook_Handler extends WC_Payment_Gateway
         $resourceMetadata = $resourceAttributes['metadata'];
 
         $shopName = get_bloginfo('name');
-        $order = wc_get_order($resourceMetadata['order_id']);
+        $orderId = $resourceMetadata['order_id'];
+        $order = wc_get_order($orderId);
+
+        if (!$order) {
+            $this->utils->log('error', 'No order found for order ID ' . $orderId);
+            status_header(400);
+            die();
+        }
+
         $customer = $order->get_customer_id();
 
         if ($resourceMetadata['agent'] !== 'cynder_woocommerce' || !isset($paymentIntentId) || empty($paymentIntentId)) {
@@ -194,6 +202,8 @@ class Cynder_PayMongo_Webhook_Handler extends WC_Payment_Gateway
 
             if ($originalValue !== $metaValue) {
                 $this->utils->log('warning', 'Paymen Intent ID ' . $paymentIntentId . ' did not originate from ' . $metaTag . ' ' . $metaValue . ' but originated from ' . $metaTag . ' ' . $originalValue);
+                status_header(400);
+                die();
             }
         }
 
