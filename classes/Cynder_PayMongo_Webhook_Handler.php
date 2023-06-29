@@ -164,9 +164,37 @@ class Cynder_PayMongo_Webhook_Handler extends WC_Payment_Gateway
         $paymentIntentId = $resourceAttributes['payment_intent_id'];
         $resourceMetadata = $resourceAttributes['metadata'];
 
+        $shopName = get_bloginfo('name');
+        $order = wc_get_order($resourceMetadata['order_id']);
+        $customer = $order->get_customer_id();
+
         if ($resourceMetadata['agent'] !== 'cynder_woocommerce' || !isset($paymentIntentId) || empty($paymentIntentId)) {
             $this->utils->log('error', 'No payment intent ID found for payment ID ' . $resourceData['id']);
             return;
+        }
+
+        $metaKeysToCheck = array('store_name', 'customer_id');
+
+        $metadataMap = array(
+            'store_name' => array(
+                'tag' => 'shop',
+                'value' => $shopName,
+            ),
+            'customer_id' => array(
+                'tag' => 'customer ID',
+                'value' => strval($customer),
+            ),
+        );
+
+        foreach ($metaKeysToCheck as $key) {
+            $originalValue = $resourceMetadata[$key];
+            $metadataMapItem = $metadataMap[$key];
+            $metaValue = $metadataMapItem['value'];
+            $metaTag = $metadataMapItem['tag'];
+
+            if ($originalValue !== $metaValue) {
+                $this->utils->log('warning', 'Paymen Intent ID ' . $paymentIntentId . ' did not originate from ' . $metaTag . ' ' . $metaValue . ' but originated from ' . $metaTag . ' ' . $originalValue);
+            }
         }
 
         if ($this->debugMode) {

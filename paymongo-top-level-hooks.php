@@ -64,7 +64,19 @@ function cynder_paymongo_create_intent($orderId) {
     $genericErrorMessage = 'Something went wrong with the payment. Please try another payment method. If issue persist, contact support.';
 
     try {
-        $paymentIntent = $client->paymentIntent()->create(floatval($amount), ['card', 'paymaya', 'atome', 'dob', 'billease', 'gcash', 'grab_pay'], get_bloginfo('name') . ' - ' . $orderId, array('agent' => 'cynder_woocommerce', 'version' => CYNDER_PAYMONGO_VERSION));
+        $shopName = get_bloginfo('name');
+        $paymentIntent = $client->paymentIntent()->create(
+            floatval($amount),
+            ['card', 'paymaya', 'atome', 'dob', 'billease', 'gcash', 'grab_pay'],
+            $shopName . ' - ' . $orderId,
+            array(
+                'agent' => 'cynder_woocommerce',
+                'version' => CYNDER_PAYMONGO_VERSION,
+                'store_name' => $shopName,
+                'order_id' => $orderId,
+                'customer_id' => $order->get_customer_id(),
+            )
+        );
 
         if ($debugMode) {
             wc_get_logger()->log('info', '[Create Payment Intent] Response ' . wc_print_r($paymentIntent, true));
